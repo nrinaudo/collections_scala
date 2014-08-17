@@ -6,6 +6,7 @@ object LeftistTree {
     val leaf = empty[A]
 
     def merge(data: Seq[LeftistTree[A]]): LeftistTree[A] = data match {
+      case Nil      => empty
       case a :: Nil => a
       case l        => merge(l.grouped(2).map {
         case a :: b :: _ => a.merge(b)
@@ -20,7 +21,7 @@ object LeftistTree {
     override def isEmpty[A](a: LeftistTree[A])         = a.isEmpty
     def merge[A](a: LeftistTree[A], b: LeftistTree[A]) = a.merge(b)
     override def insert[A](a: A, as: LeftistTree[A])   = as.insert(a)
-    override def findMin[A](a: LeftistTree[A])         = a.min
+    override def min[A](a: LeftistTree[A])             = a.min
     override def deleteMin[A](a: LeftistTree[A])       = a.deleteMin()
   }
 
@@ -42,7 +43,7 @@ object LeftistTree {
 
     override def insert(a: A) = merge(Node(a, 1, Leaf(), Leaf()))
     override def deleteMin()  = left.merge(right)
-    override def min          = value
+    override def min          = Some(value)
   }
 
   case class Leaf[A: Ordering]() extends LeftistTree[A] {
@@ -51,7 +52,7 @@ object LeftistTree {
     override def merge(as: LeftistTree[A]) = as
     override def insert(a: A)              = Node(a, 1, this, this)
     override def deleteMin()               = throw new UnsupportedOperationException("Leaf.deleteMin")
-    override def min                       = throw new UnsupportedOperationException("Leaf.findMin")
+    override def min                       = None
   }
 }
 
@@ -61,5 +62,7 @@ sealed trait LeftistTree[A] {
   def merge(as: LeftistTree[A]): LeftistTree[A]
   def insert(a: A): LeftistTree[A]
   def deleteMin(): LeftistTree[A]
-  def min: A
+  def min: Option[A]
+
+  def nonEmpty: Boolean = !isEmpty
 }

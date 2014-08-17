@@ -6,9 +6,17 @@ import org.scalatest.prop.GeneratorDrivenPropertyChecks
 import org.scalatest.{Matchers, FunSpec}
 
 object BinarySearchTreeSpec {
-  def leaf: Gen[Leaf[Int]] = Gen.const(BinarySearchTree.Leaf[Int]())
-  def node: Gen[Node[Int]] = Arbitrary.arbitrary[Int].map(i => BinarySearchTree.Node(i, Leaf(), Leaf()))
-  def treeData: Gen[List[Int]] = Arbitrary.arbitrary[List[Int]].suchThat(_.nonEmpty)
+  implicit def arbLeaf[T: Ordering]: Arbitrary[Leaf[T]] = Arbitrary {
+    Gen.const(BinarySearchTree.Leaf[T]())
+  }
+
+  implicit def arbNode[T: Ordering: Arbitrary]: Arbitrary[Node[T]] = Arbitrary {
+    Arbitrary.arbitrary[T].map(t => BinarySearchTree.Node(t, Leaf(), Leaf()))
+  }
+
+  implicit def arbTree[T: Ordering: Arbitrary]: Arbitrary[BinarySearchTree[T]] = Arbitrary {
+    Arbitrary.arbitrary[List[T]].map {ts => BinarySearchTree(ts :_*)}
+  }
 }
 
 class BinarySearchTreeSpec extends FunSpec with Matchers with GeneratorDrivenPropertyChecks {
@@ -23,33 +31,19 @@ class BinarySearchTreeSpec extends FunSpec with Matchers with GeneratorDrivenPro
 
   describe("A node") {
     it("should not be empty") {
-      forAll(node) { node => node.isEmpty should be(false) }
+      forAll { node: Node[Int] => node.nonEmpty should be(true) }
     }
 
     it("should contain its own value") {
-      forAll(node) { node => node.contains(node.value) should be(true) }
+      forAll { node: Node[Int] => node.contains(node.value) should be(true) }
     }
   }
 
   describe("A tree") {
-    it("should contain all of its elements") {
-      forAll(treeData) { data =>
-        val tree = BinarySearchTree(data: _*)
-
-        data foreach { i => tree.contains(i) should be(true) }
-      }
-    }
-
-    it("should respect its invariants when built incrementally") {
-      forAll(treeData) { data =>
-        data.foldLeft((BinarySearchTree.empty[Int], List[Int]())) {
-          case ((t1, c1), curr) =>
-            val t2 = t1 + curr
-            val c2 = curr :: c1
-
-            c2 foreach { i => t2.contains(i) should be(true) }
-
-            (t2, c2)
+    it("should contain any element that is added to it") {
+      forAll { (i: Int, tree: BinarySearchTree[Int]) =>
+        whenever(!tree.contains(i)) {
+          (tree + i).contains(i) should be(true)
         }
       }
     }

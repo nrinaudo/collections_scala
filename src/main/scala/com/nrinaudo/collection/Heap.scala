@@ -11,12 +11,11 @@ import scala.language.higherKinds
 trait Heap[A] {
   def isEmpty: Boolean
   def insert(a: A): Heap[A]
-  def findMin: A
+  def min: Option[A]
   def deleteMin(): Heap[A]
 
   def merge(as: Heap[A]): Heap[A] =
-    if(as.isEmpty) this
-    else           insert(as.findMin).merge(as.deleteMin())
+    as.min.map(insert(_).merge(as.deleteMin())).getOrElse(this)
 }
 
 /**
@@ -29,7 +28,7 @@ object Heap {
 
     override def isEmpty      = heapLike.isEmpty(heap)
     override def insert(a: A) = new Wrapped(heapLike.insert(a, heap))
-    override def findMin      = heapLike.findMin(heap)
+    override def min          = heapLike.min(heap)
     override def deleteMin()  = new Wrapped(heapLike.deleteMin(heap))
   }
 }
@@ -38,6 +37,6 @@ object Heap {
 trait HeapLike[Impl[_]] {
   def isEmpty[A](a: Impl[A]): Boolean
   def insert[A](a: A, as: Impl[A]): Impl[A]
-  def findMin[A](a: Impl[A]): A
+  def min[A](a: Impl[A]): Option[A]
   def deleteMin[A](a: Impl[A]): Impl[A]
 }

@@ -1,23 +1,30 @@
 package com.nrinaudo.collection
 
 import com.nrinaudo.collection.LeftistTree.{Leaf, Node}
-import org.scalacheck.{Arbitrary, Gen}
+import org.scalacheck.Arbitrary
 import org.scalatest.prop.GeneratorDrivenPropertyChecks
-import org.scalatest.{Matchers, FunSpec}
+import org.scalatest.{FunSpec, Matchers}
 
 object LeftistTreeSpec {
-  def node: Gen[Node[Int]] = Arbitrary.arbitrary[Int].map { i => Node(i, 1, Leaf(), Leaf()) }
-  def treeData: Gen[List[Int]] = Arbitrary.arbitrary[List[Int]].suchThat(_.nonEmpty)
+  implicit def arbNode[T: Ordering: Arbitrary]: Arbitrary[Node[T]] = Arbitrary {
+    Arbitrary.arbitrary[T].map { t => Node(t, 1, Leaf(), Leaf()) }
+  }
+
+  implicit def arbTree[T: Ordering: Arbitrary]: Arbitrary[LeftistTree[T]] = Arbitrary {
+    Arbitrary.arbitrary[List[T]].map { ts => LeftistTree(ts :_*)}
+  }
 }
 
 class LeftistTreeSpec extends FunSpec with Matchers with GeneratorDrivenPropertyChecks {
-  import LeftistTreeSpec._
+  import com.nrinaudo.collection.LeftistTreeSpec._
 
   describe("A leaf") {
     it("should be empty") { LeftistTree.empty[Int].isEmpty should be(true) }
-    it("should fail to return its minimum value") {
-      intercept[UnsupportedOperationException](LeftistTree.empty[Int].min)
+
+    it("should not return a minimum value") {
+      LeftistTree.empty[Int].min.isDefined should be(false)
     }
+
     it("should fail to delete its minimum value") {
       intercept[UnsupportedOperationException](LeftistTree.empty[Int].deleteMin())
     }
@@ -26,31 +33,31 @@ class LeftistTreeSpec extends FunSpec with Matchers with GeneratorDrivenProperty
 
   describe("A node") {
     it("should not be empty") {
-      forAll(node) { node => node.isEmpty should be(false) }
+      forAll { node: Node[Int] => node.nonEmpty should be(true) }
     }
 
     it("should return its value as its min") {
-      forAll(node) { node => node.min should be(node.value) }
+      forAll { node: Node[Int] => node.min should be(Some(node.value)) }
     }
 
     it("should accept deleting its minimum value") {
-      forAll(node) { node => node.deleteMin() }
+      forAll { node: Node[Int] => node.deleteMin().isEmpty should be(true) }
     }
   }
 
   describe("A tree") {
-    it("should return the correct minimum value") {
-      forAll(treeData) { data => LeftistTree(data :_*).min should be(data.min) }
-    }
+    it("should unfold in ascending order") {
+      def step[T: Ordering](tree: LeftistTree[T], prev: T): Unit = {
+        if(tree.nonEmpty) {
+          implicitly[Ordering[T]].gteq(tree.min.get, prev) should be(true)
+          step(tree.deleteMin(), tree.min.get)
+        }
+      }
 
-    it("should return a valid leftist tree when deleteMin is called") {
-      forAll(treeData) { data =>
-        val tree = LeftistTree(data :_*).deleteMin()
-
-        if(data.length == 1)
-          intercept[UnsupportedOperationException](tree.min)
-        else
-          tree.min should be(data.sorted.tail.min)
+      forAll { ts: LeftistTree[Int] =>
+        whenever(ts.nonEmpty) {
+          step(ts.deleteMin(), ts.min.get)
+        }
       }
     }
   }
