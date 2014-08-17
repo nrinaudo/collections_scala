@@ -18,6 +18,8 @@ scalacOptions += "-unchecked"
 
 scalacOptions += "-feature"
 
+instrumentSettings
+
 
 
 // - Dependencies ------------------------------------------------------------------------------------------------------
