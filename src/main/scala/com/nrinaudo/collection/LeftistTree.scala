@@ -63,6 +63,4 @@ sealed trait LeftistTree[A] {
   def insert(a: A): LeftistTree[A]
   def deleteMin(): LeftistTree[A]
   def min: Option[A]
-
-  def nonEmpty: Boolean = !isEmpty
 }
