@@ -11,7 +11,7 @@ trait Stack[A] {
 
 object Stack {
   implicit class Wrapped[A, Impl[_] : StackLike](stack: Impl[A]) extends Stack[A] {
-    private lazy val stackLike = implicitly[StackLike[Impl]]
+    private val stackLike = implicitly[StackLike[Impl]]
 
     override def isEmpty    = stackLike.isEmpty(stack)
     override def push(a: A) = new Wrapped(stackLike.push(a, stack))

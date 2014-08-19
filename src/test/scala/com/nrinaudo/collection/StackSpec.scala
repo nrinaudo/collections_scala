@@ -25,6 +25,19 @@ class StackSpec[A: Arbitrary, Impl[_]: StackLike](empty: Impl[A]) extends FunSpe
       }
     }
   }
+
+  describe("A Stack") {
+    it("should return the elements that are added to it, last-in first out") {
+      def step(as: List[A], stack: Stack[A]): Unit = as match {
+        case head :: tail =>
+          stack.top should be(Some(head))
+          step(tail, stack.pop())
+        case _ =>
+      }
+
+      forAll { as: List[A] => step(as, create(as :_*))}
+    }
+  }
 }
 
 class ListStackSpec extends StackSpec[Int, List](Nil)
