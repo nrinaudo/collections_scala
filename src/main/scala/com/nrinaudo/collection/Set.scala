@@ -13,9 +13,7 @@ trait Set[A] extends (A => Boolean) {
 object Set {
   def apply[A, Impl[_]: SetLike](set: Impl[A]) = Wrapped(set)
 
-  implicit class Wrapped[A, Impl[_]: SetLike](val set: Impl[A]) extends Set[A] {
-    private lazy val setLike = implicitly[SetLike[Impl]]
-
+  implicit class Wrapped[A, Impl[_]](val set: Impl[A])(implicit setLike: SetLike[Impl]) extends Set[A] {
     override def isEmpty        = setLike.isEmpty(set)
     override def insert(a: A)   = new Wrapped(setLike.insert(a, set))
     override def contains(a: A) = setLike.contains(a, set)
