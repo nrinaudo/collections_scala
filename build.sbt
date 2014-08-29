@@ -24,6 +24,6 @@ instrumentSettings
 
 // - Dependencies ------------------------------------------------------------------------------------------------------
 // ---------------------------------------------------------------------------------------------------------------------
-libraryDependencies += "org.scalatest"  %% "scalatest"  % "2.2.0"  % "test"
+libraryDependencies += "org.scalatest"  %% "scalatest"  % "2.2.2"  % "test"
 
 libraryDependencies += "org.scalacheck" %% "scalacheck" % "1.11.5" % "test"
