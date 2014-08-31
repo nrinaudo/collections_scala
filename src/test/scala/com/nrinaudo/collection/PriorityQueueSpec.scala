@@ -3,18 +3,20 @@ package com.nrinaudo.collection
 import org.scalacheck.Arbitrary
 import org.scalatest.prop.GeneratorDrivenPropertyChecks
 import org.scalatest.{Matchers, FunSpec}
-import com.nrinaudo.collection.Heap._
+import com.nrinaudo.collection.PriorityQueue._
 
 import scala.language.higherKinds
 
-class HeapSpec[A: Arbitrary: Ordering, Impl[_]: HeapLike](empty: Impl[A]) extends FunSpec with Matchers with GeneratorDrivenPropertyChecks {
-  implicit def arbHeap: Arbitrary[Impl[A]] = Arbitrary {
+class PriorityQueueSpec[A: Arbitrary: Ordering, Impl[_]: PriorityQueueLike](empty: Impl[A])
+  extends FunSpec with Matchers with GeneratorDrivenPropertyChecks {
+
+  implicit def arbPriorityQueue: Arbitrary[Impl[A]] = Arbitrary {
     Arbitrary.arbitrary[List[A]].map(create)
   }
 
-  def create(as: A*): Impl[A] = as.foldLeft(empty)((heap, a) => implicitly[HeapLike[Impl]].insert(a, heap))
+  def create(as: A*): Impl[A] = as.foldLeft(empty)((queue, a) => implicitly[PriorityQueueLike[Impl]].insert(a, queue))
 
-  describe("An empty Heap") {
+  describe("An empty PriorityQUeue") {
     it("should be empty") {
       empty.isEmpty should be(true)
     }
@@ -36,12 +38,12 @@ class HeapSpec[A: Arbitrary: Ordering, Impl[_]: HeapLike](empty: Impl[A]) extend
 
   }
 
-  describe("A non-empty Heap") {
+  describe("A non-empty PriorityQueue") {
     it("should unfold in ascending order") {
-      def step[T: Ordering](heap: Heap[T], prev: T): Unit = {
-        if(heap.nonEmpty) {
-          implicitly[Ordering[T]].gteq(heap.min.get, prev) should be(true)
-          step(heap.deleteMin(), heap.min.get)
+      def step[T: Ordering](queue: PriorityQueue[T], prev: T): Unit = {
+        if(queue.nonEmpty) {
+          implicitly[Ordering[T]].gteq(queue.min.get, prev) should be(true)
+          step(queue.deleteMin(), queue.min.get)
         }
       }
 
