@@ -8,6 +8,7 @@ trait Set[A] extends (A => Boolean) {
   def contains(a: A): Boolean
 
   override def apply(a: A): Boolean = contains(a)
+  def nonEmpty = !isEmpty
 }
 
 object Set {

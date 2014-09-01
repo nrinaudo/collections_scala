@@ -21,7 +21,7 @@ object LeftistTree {
     override def isEmpty[A](a: LeftistTree[A])         = a.isEmpty
     def merge[A](a: LeftistTree[A], b: LeftistTree[A]) = a.merge(b)
     override def insert[A](a: A, as: LeftistTree[A])   = as.insert(a)
-    override def min[A](a: LeftistTree[A])             = a.min
+    override def findMin[A](a: LeftistTree[A])             = a.min
     override def deleteMin[A](a: LeftistTree[A])       = a.deleteMin()
   }
 

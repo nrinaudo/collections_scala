@@ -22,7 +22,7 @@ class HeapSpecs[A: Arbitrary: Ordering, Impl[_]: HeapLike](empty: Impl[A])
     }
 
     it("should not have a min value") {
-      empty.min.isDefined should be(false)
+      empty.findMin.isDefined should be(false)
     }
 
     it("should fail to delete its minimum value") {
@@ -31,7 +31,7 @@ class HeapSpecs[A: Arbitrary: Ordering, Impl[_]: HeapLike](empty: Impl[A])
 
     it("should yield the correct minimum value after insertion of an element") {
       forAll { a: A =>
-        empty.insert(a).min should be(Some(a))
+        empty.insert(a).findMin should be(Some(a))
         empty.insert(a).deleteMin().isEmpty should be(true)
       }
     }
@@ -42,14 +42,14 @@ class HeapSpecs[A: Arbitrary: Ordering, Impl[_]: HeapLike](empty: Impl[A])
     it("should unfold in ascending order") {
       def step[T: Ordering](queue: Heap[T], prev: T): Unit = {
         if(queue.nonEmpty) {
-          implicitly[Ordering[T]].gteq(queue.min.get, prev) should be(true)
-          step(queue.deleteMin(), queue.min.get)
+          implicitly[Ordering[T]].gteq(queue.findMin.get, prev) should be(true)
+          step(queue.deleteMin(), queue.findMin.get)
         }
       }
 
       forAll { ts: Impl[A] =>
         whenever(ts.nonEmpty) {
-          step(ts.deleteMin(), ts.min.get)
+          step(ts.deleteMin(), ts.findMin.get)
         }
       }
     }
