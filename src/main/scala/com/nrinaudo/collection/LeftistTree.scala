@@ -17,7 +17,7 @@ object LeftistTree {
     merge(as.map(Node(_, 1, leaf, leaf)))
   }
 
-  implicit object AsPriorityQueue$ extends PriorityQueueLike[LeftistTree] {
+  implicit object AsHeap$$ extends HeapLike[LeftistTree] {
     override def isEmpty[A](a: LeftistTree[A])         = a.isEmpty
     def merge[A](a: LeftistTree[A], b: LeftistTree[A]) = a.merge(b)
     override def insert[A](a: A, as: LeftistTree[A])   = as.insert(a)
