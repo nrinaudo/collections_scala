@@ -17,7 +17,7 @@ object LeftistHeap {
     merge(as.map(Node(_, 1, leaf, leaf)))
   }
 
-  implicit object AsHeap$$ extends HeapLike[LeftistHeap] {
+  implicit object AsHeap extends HeapLike[LeftistHeap] {
     override def isEmpty[A](a: LeftistHeap[A])         = a.isEmpty
     def merge[A](a: LeftistHeap[A], b: LeftistHeap[A]) = a.merge(b)
     override def insert[A](a: A, as: LeftistHeap[A])   = as.insert(a)
