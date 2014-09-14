@@ -38,4 +38,5 @@ sealed trait BinarySearchTree[A] {
   def contains(a: A): Boolean
 
   def +(a: A): BinarySearchTree[A] = add(a)
+  def nonEmpty = !isEmpty
 }

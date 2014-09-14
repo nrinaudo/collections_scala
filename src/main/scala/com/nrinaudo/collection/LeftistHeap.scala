@@ -18,49 +18,50 @@ object LeftistHeap {
   }
 
   implicit object AsHeap extends HeapLike[LeftistHeap] {
-    override def isEmpty[A](a: LeftistHeap[A])         = a.isEmpty
-    def merge[A](a: LeftistHeap[A], b: LeftistHeap[A]) = a.merge(b)
-    override def insert[A](a: A, as: LeftistHeap[A])   = as.insert(a)
-    override def findMin[A](a: LeftistHeap[A])             = a.min
-    override def deleteMin[A](a: LeftistHeap[A])       = a.deleteMin()
+    override def isEmpty[A](a: LeftistHeap[A])       = a.isEmpty
+    override def insert[A](a: A, as: LeftistHeap[A]) = as.insert(a)
+    override def findMin[A](a: LeftistHeap[A])       = a.findMin
+    override def deleteMin[A](a: LeftistHeap[A])     = a.deleteMin()
   }
 
-  case class Node[A: Ordering](value: A, rank: Int, left: LeftistHeap[A], right: LeftistHeap[A]) extends LeftistHeap[A] {
-    private def lessThan(a: A, b: A): Boolean = implicitly[Ordering[A]].lt(a, b)
+  case class Node[A](value: A, rank: Int, left: LeftistHeap[A], right: LeftistHeap[A])(implicit ord: Ordering[A])
+    extends LeftistHeap[A] {
+    private def sortRank(a: A, d1: LeftistHeap[A], d2: LeftistHeap[A]): LeftistHeap[A] =
+      if(d1.rank > d2.rank) Node(a, d1.rank + 1, d1, d2)
+      else                  Node(a, d2.rank + 1, d2, d1)
 
-    private def tag(a: A, left: LeftistHeap[A], right: LeftistHeap[A]): LeftistHeap[A] =
-      if(left.rank > right.rank) Node(a, left.rank + 1, left, right)
-      else                       Node(a, right.rank + 1, right, left)
-
-    override def isEmpty = false
+    override val isEmpty = false
 
     override def merge(as: LeftistHeap[A]) = as match {
       case Leaf()                         => this
       case Node(value2, _, left2, right2) =>
-        if(lessThan(value, value2)) tag(value,  left,  right.merge(as))
-        else                        tag(value2, left2, this.merge(right2))
+        if(ord.lt(value, value2)) sortRank(value,  left,  right.merge(as))
+        else                      sortRank(value2, left2, this.merge(right2))
     }
 
     override def insert(a: A) = merge(Node(a, 1, Leaf(), Leaf()))
-    override def deleteMin()  = left.merge(right)
-    override def min          = Some(value)
+    override def deleteMin() = left.merge(right)
+    override def findMin = Some(value)
   }
 
   case class Leaf[A: Ordering]() extends LeftistHeap[A] {
     override val rank                      = 0
-    override def isEmpty                   = true
+    override val isEmpty                   = true
     override def merge(as: LeftistHeap[A]) = as
     override def insert(a: A)              = Node(a, 1, this, this)
     override def deleteMin()               = throw new UnsupportedOperationException("Leaf.deleteMin")
-    override def min                       = None
+    override val findMin                   = None
   }
 }
 
 sealed trait LeftistHeap[A] {
-  def rank: Int
-  def isEmpty: Boolean
+  def rank                     : Int
+  def isEmpty                  : Boolean
   def merge(as: LeftistHeap[A]): LeftistHeap[A]
-  def insert(a: A): LeftistHeap[A]
-  def deleteMin(): LeftistHeap[A]
-  def min: Option[A]
+  def insert(a: A)             : LeftistHeap[A]
+  def deleteMin()              : LeftistHeap[A]
+  def findMin                  : Option[A]
+
+  def +(a: A): LeftistHeap[A] = insert(a)
+  def nonEmpty = !isEmpty
 }
