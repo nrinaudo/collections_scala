@@ -3,10 +3,10 @@ package com.nrinaudo.collection
 import scala.language.higherKinds
 
 trait Stack[A] {
-  def isEmpty: Boolean
+  def isEmpty   : Boolean
   def push(a: A): Stack[A]
-  def top: Option[A]
-  def pop(): Stack[A]
+  def top       : Option[A]
+  def pop()     : Stack[A]
 }
 
 object Stack {
@@ -29,8 +29,8 @@ object Stack {
 }
 
 trait StackLike[Impl[_]] {
-  def isEmpty[A](as: Impl[A]): Boolean
+  def isEmpty[A](as: Impl[A])   : Boolean
   def push[A](a: A, as: Impl[A]): Impl[A]
-  def top[A](as: Impl[A]): Option[A]
-  def pop[A](as: Impl[A]): Impl[A]
+  def top[A](as: Impl[A])       : Option[A]
+  def pop[A](as: Impl[A])       : Impl[A]
 }

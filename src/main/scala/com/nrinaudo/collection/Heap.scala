@@ -5,7 +5,7 @@ import scala.language.higherKinds
 trait Heap[A] {
   def isEmpty     : Boolean
   def insert(a: A): Heap[A]
-  def findMin         : Option[A]
+  def findMin     : Option[A]
   def deleteMin() : Heap[A]
 
   def nonEmpty: Boolean = !isEmpty
@@ -22,8 +22,8 @@ object Heap {
 }
 
 trait HeapLike[Impl[_]] {
-  def isEmpty[A](a: Impl[A])      : Boolean
+  def isEmpty[A](as: Impl[A])     : Boolean
   def insert[A](a: A, as: Impl[A]): Impl[A]
-  def findMin[A](a: Impl[A])      : Option[A]
-  def deleteMin[A](a: Impl[A])    : Impl[A]
+  def findMin[A](as: Impl[A])     : Option[A]
+  def deleteMin[A](as: Impl[A])   : Impl[A]
 }

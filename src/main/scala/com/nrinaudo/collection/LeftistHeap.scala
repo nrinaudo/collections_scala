@@ -18,17 +18,17 @@ object LeftistHeap {
   }
 
   implicit object AsHeap extends HeapLike[LeftistHeap] {
-    override def isEmpty[A](a: LeftistHeap[A])       = a.isEmpty
+    override def isEmpty[A](as: LeftistHeap[A])      = as.isEmpty
     override def insert[A](a: A, as: LeftistHeap[A]) = as.insert(a)
-    override def findMin[A](a: LeftistHeap[A])       = a.findMin
-    override def deleteMin[A](a: LeftistHeap[A])     = a.deleteMin()
+    override def findMin[A](as: LeftistHeap[A])      = as.findMin
+    override def deleteMin[A](as: LeftistHeap[A])    = as.deleteMin()
   }
 
   case class Node[A](value: A, rank: Int, left: LeftistHeap[A], right: LeftistHeap[A])(implicit ord: Ordering[A])
     extends LeftistHeap[A] {
-    private def sortRank(a: A, d1: LeftistHeap[A], d2: LeftistHeap[A]): LeftistHeap[A] =
-      if(d1.rank > d2.rank) Node(a, d1.rank + 1, d1, d2)
-      else                  Node(a, d2.rank + 1, d2, d1)
+    private def sortRank(a: A, as1: LeftistHeap[A], as2: LeftistHeap[A]): LeftistHeap[A] =
+      if(as1.rank > as2.rank) Node(a, as1.rank + 1, as1, as2)
+      else                    Node(a, as2.rank + 1, as2, as1)
 
     override val isEmpty = false
 

@@ -7,7 +7,7 @@ import com.nrinaudo.collection.Heap._
 
 import scala.language.higherKinds
 
-class HeapSpecs[A: Arbitrary: Ordering, Impl[_]: HeapLike](empty: Impl[A])
+class HeapSpec[A: Arbitrary: Ordering, Impl[_]: HeapLike](empty: Impl[A])
   extends FunSpec with Matchers with GeneratorDrivenPropertyChecks {
 
   implicit def arbHeap: Arbitrary[Impl[A]] = Arbitrary {

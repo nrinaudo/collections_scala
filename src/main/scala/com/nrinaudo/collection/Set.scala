@@ -3,8 +3,8 @@ package com.nrinaudo.collection
 import scala.language.higherKinds
 
 trait Set[A] extends (A => Boolean) {
-  def isEmpty: Boolean
-  def insert(a: A): Set[A]
+  def isEmpty       : Boolean
+  def insert(a: A)  : Set[A]
   def contains(a: A): Boolean
 
   override def apply(a: A): Boolean = contains(a)
@@ -22,7 +22,7 @@ object Set {
 }
 
 trait SetLike[Impl[_]] {
-  def isEmpty[A](as: Impl[A]): Boolean
-  def insert[A](a: A, as: Impl[A]): Impl[A]
+  def isEmpty[A](as: Impl[A])       : Boolean
+  def insert[A](a: A, as: Impl[A])  : Impl[A]
   def contains[A](a: A, as: Impl[A]): Boolean
 }
