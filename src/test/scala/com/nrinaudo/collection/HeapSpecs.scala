@@ -39,11 +39,21 @@ class HeapSpecs[A: Arbitrary: Ordering, Impl[_]: HeapLike](empty: Impl[A])
   }
 
   describe("A non-empty Heap") {
+    it("should contain the number of elements that were added to it") {
+      def size[A](heap: Heap[A]): Int =
+      if(heap.isEmpty) 0
+      else             1 + size(heap.deleteMin())
+
+      forAll { as: List[A] =>
+        size(create(as:_*)) should be(as.size)
+      }
+    }
+
     it("should unfold in ascending order") {
-      def step[T: Ordering](queue: Heap[T], prev: T): Unit = {
-        if(queue.nonEmpty) {
-          implicitly[Ordering[T]].gteq(queue.findMin.get, prev) should be(true)
-          step(queue.deleteMin(), queue.findMin.get)
+      def step[T: Ordering](heap: Heap[T], prev: T): Unit = {
+        if(heap.nonEmpty) {
+          implicitly[Ordering[T]].gteq(heap.findMin.get, prev) should be(true)
+          step(heap.deleteMin(), heap.findMin.get)
         }
       }
 
