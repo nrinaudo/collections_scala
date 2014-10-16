@@ -7,15 +7,15 @@ trait Stack[A] {
   def push(a: A): Stack[A]
   def top       : Option[A]
   def pop()     : Stack[A]
+
+  def nonEmpty = !isEmpty
 }
 
 object Stack {
-  implicit class Wrapped[A, Impl[_] : StackLike](stack: Impl[A]) extends Stack[A] {
-    private val stackLike = implicitly[StackLike[Impl]]
-
+  implicit class Wrapped[A, Impl[_]](stack: Impl[A])(implicit stackLike: StackLike[Impl]) extends Stack[A] {
     override def isEmpty    = stackLike.isEmpty(stack)
-    override def push(a: A) = new Wrapped(stackLike.push(a, stack))
     override def top        = stackLike.top(stack)
+    override def push(a: A) = new Wrapped(stackLike.push(a, stack))
     override def pop()      = new Wrapped(stackLike.pop(stack))
   }
 

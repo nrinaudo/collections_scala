@@ -9,6 +9,7 @@ trait Set[A] extends (A => Boolean) {
 
   override def apply(a: A): Boolean = contains(a)
   def nonEmpty = !isEmpty
+  @inline def +(a: A): Set[A] = insert(a)
 }
 
 object Set {

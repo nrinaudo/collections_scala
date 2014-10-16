@@ -51,11 +51,19 @@ class BinomialHeap[A: Ordering] private (private val trees: List[BinomialTree[A]
   def nonEmpty = !isEmpty
 }
 
+
+
+// - Binomial trees ----------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 private object BinomialTree {
   def apply[A: Ordering](a: A): BinomialTree[A] = BinomialTree(a, 0, Nil)
 }
+
 private case class BinomialTree[A: Ordering](value: A, rank: Int, children: List[BinomialTree[A]]) {
-  def link(as: BinomialTree[A]): BinomialTree[A] =
+  def link(as: BinomialTree[A]): BinomialTree[A] = {
+    require(as.rank == rank)
+
     if(implicitly[Ordering[A]].lteq(value, as.value)) BinomialTree(value,    rank + 1, as :: children)
     else                                              BinomialTree(as.value, rank + 1, this :: as.children)
+  }
 }

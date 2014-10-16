@@ -17,7 +17,7 @@ class StackSpec[A: Arbitrary, Impl[_]: StackLike](empty: Impl[A]) extends FunSpe
   describe("An empty Stack") {
     it("should be empty") { empty.isEmpty should be(true) }
     it("should not have a top") { empty.top.isDefined should be(false) }
-    it("should fail to pop") { intercept[UnsupportedOperationException](empty.pop) }
+    it("should fail to pop") { intercept[UnsupportedOperationException](empty.pop()) }
     it("should pop the correct value after a push") {
       forAll { a: A =>
         empty.push(a).top should be(Some(a))

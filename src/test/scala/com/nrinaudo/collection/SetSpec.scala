@@ -23,11 +23,10 @@ class SetSpec[A: Arbitrary, Impl[_]: SetLike](empty: Impl[A]) extends FunSpec wi
   }
 
   describe("A non-empty Set") {
-    it("should contain any element that is added to it") {
-      forAll { (a: A, set: Impl[A]) =>
-        whenever(!set.contains(a)) {
-          set.insert(a).contains(a) should be(true)
-        }
+    it("should contain all elements that are added to it") {
+      forAll { as: List[A] =>
+        def set = create(as:_*)
+        as.foreach { set.contains(_) should be(true) }
       }
     }
   }
