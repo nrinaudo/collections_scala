@@ -12,6 +12,8 @@ class SetSpec[A: Arbitrary, Impl[_]: SetLike](empty: Impl[A]) extends FunSpec wi
     Arbitrary.arbitrary[List[A]].map(create)
   }
 
+  def checkInvariants(as: Impl[A]): Unit = {}
+
   def create(as: A*): Impl[A] = as.foldLeft(empty)((set, a) => implicitly[SetLike[Impl]].insert(a, set))
 
   describe("An empty Set") {
@@ -20,9 +22,17 @@ class SetSpec[A: Arbitrary, Impl[_]: SetLike](empty: Impl[A]) extends FunSpec wi
     it("should not contain any element") {
       forAll { a: A => empty.contains(a) should be(false) }
     }
+
+    it("should verify invariants") {
+      checkInvariants(empty)
+    }
   }
 
   describe("A non-empty Set") {
+    it("should verify invariants") {
+      forAll { as: Impl[A] => checkInvariants(as) }
+    }
+
     it("should contain all elements that are added to it") {
       forAll { as: List[A] =>
         def set = create(as:_*)

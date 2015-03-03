@@ -17,6 +17,10 @@ object Stack {
     override def top        = stackLike.top(stack)
     override def push(a: A) = new Wrapped(stackLike.push(a, stack))
     override def pop()      = new Wrapped(stackLike.pop(stack))
+
+    override def hashCode()       = stack.hashCode()
+    override def equals(obj: Any) = stack.equals(obj)
+    override def toString         = stack.toString
   }
 
   /** Marks Scala lists as valid implementations of Stack. */
