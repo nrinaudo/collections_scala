@@ -6,14 +6,13 @@ object BinarySearchTree {
   // - Smart constructors ----------------------------------------------------------------------------------------------
   // -------------------------------------------------------------------------------------------------------------------
   def empty[A: Ordering]: BinarySearchTree[A] = Leaf()
-  def apply[A: Ordering](as: A*): BinarySearchTree[A] = as.foldLeft(empty)(_.add(_))
+  def apply[A](as: A*)(implicit ord: Ordering[A]): BinarySearchTree[A] = as.foldLeft(empty(ord))(_.add(_))
 
 
 
   // - Normal node -----------------------------------------------------------------------------------------------------
   // -------------------------------------------------------------------------------------------------------------------
-  case class Node[A](value: A, left: BinarySearchTree[A], right: BinarySearchTree[A])(implicit ord: Ordering[A])
-    extends BinarySearchTree[A] {
+  case class Node[A: Ordering](value: A, left: BinarySearchTree[A], right: BinarySearchTree[A]) extends BinarySearchTree[A] {
     override def isEmpty = false
 
     override def add(a: A) =
